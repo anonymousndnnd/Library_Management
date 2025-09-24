@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+  AUTHOR
+}
+
+model Admin {
+  id       String     @id @default(auto()) @map("_id") @db.ObjectId
+  username  String 
+  email     String          @unique
+  password  String
+  role      Role      @default(ADMIN)
+  customer Customer[]
+  author   Author[]
+  createdAt DateTime  @default(now())
+}
+
+model Customer {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  username  String 
+  email     String          @unique
+  password  String
+  adminId String @db.ObjectId
+  admin   Admin  @relation(fields: [adminId], references: [id])
+  role      Role      @default(CUSTOMER)
+  createdAt DateTime  @default(now())
+}
+
+
+
+model Author {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  username  String 
+  email     String          @unique
+  password  String
+  role      Role      @default(AUTHOR)
+  adminId String  @db.ObjectId
+  admin   Admin   @relation(fields: [adminId], references: [id])
+  createdAt DateTime  @default(now())
+  books Books[]
+}
+
+model Books {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  title  String
+  description String
+  isPublished Boolean @default(false)
+  authorId String  @db.ObjectId
+  author   Author   @relation(fields: [authorId], references: [id])
+  createdAt DateTime  @default(now())
+}
