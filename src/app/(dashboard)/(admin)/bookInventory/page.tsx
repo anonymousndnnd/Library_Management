@@ -1,8 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { useRouter } from 'next/navigation';
+
 
 interface Book {
   id: string;
@@ -14,26 +17,27 @@ interface Book {
 }
 
 function BookInventory() {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
+  const books = useSelector((state: RootState) => state.admin.books); // get books from adminSlice
+  const loading = useSelector((state: RootState) => state.admin.loading);
   const [search, setSearch] = useState('');
+  const router=useRouter();
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const res = await axios.get('/api/bookInventory');
-        if (res.data.success) {
-          setBooks(res.data.books);
-        }
-      } catch (error) {
-        console.error('Error fetching books:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchBooks = async () => {
+  //     try {
+  //       const res = await axios.get('/api/bookInventory');
+  //       if (res.data.success) {
+  //         setBooks(res.data.books);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching books:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchBooks();
-  }, []);
+  //   fetchBooks();
+  // }, []);
 
   const filteredBooks = books.filter(book =>
     book.title.toLowerCase().includes(search.toLowerCase())
@@ -71,6 +75,7 @@ function BookInventory() {
             key={book.id}
             whileHover={{ scale: 1.05 }}
             className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg flex flex-col justify-between transition-all"
+            onClick={()=>router.replace(`/bookDetails/${book.id}`)}
           >
             <div>
               <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">{book.title}</h3>

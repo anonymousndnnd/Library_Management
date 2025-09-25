@@ -14,7 +14,9 @@ import { useRouter } from "next/navigation"
 import { FcGoogle } from "react-icons/fc"
 import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion";
-
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "@/store/store";
+import { fetchAdminData } from "@/store/slices/adminSlice";
 
 
 export default function SigInPage(){
@@ -22,6 +24,7 @@ export default function SigInPage(){
   const router=useRouter();
   const { data: session ,status} = useSession();
   const [loginError, setLoginError] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
 //   if (status === "loading") {
 //   return <p>Loading...</p>; // or a spinner
 // }
@@ -31,6 +34,7 @@ useEffect(() => {
     console.log("role is:", role);
 
     if (role === "ADMIN") {
+      dispatch(fetchAdminData());
       router.replace("/adminDashboard");
     } else if (role === "AUTHOR") {
       router.replace("/authorDashboard");

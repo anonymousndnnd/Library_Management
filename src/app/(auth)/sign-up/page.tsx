@@ -68,6 +68,7 @@ export default function SignUpPage() {
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50" onClick={handleOverlayClick}>
       <motion.div
         ref={modalRef}
+        onClick={(e) => e.stopPropagation()}
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}

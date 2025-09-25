@@ -6,31 +6,37 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FaUser, FaUsers, FaBook, FaClipboardList, FaChartLine, FaCogs } from "react-icons/fa";
 import { useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/store"; 
+
 
 function AdminDashboard() {
-  const [totalAuthor, setAuthorCount] = useState<number | null>(null);
-  const [totalCustomer, setCustomerCount] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { authorCount, customerCount, books, loading, error } = useSelector(
+    (state: RootState) => state.admin
+  );
+  // const [totalAuthor, setAuthorCount] = useState<number | null>(null);
+  // const [totalCustomer, setCustomerCount] = useState<number | null>(null);
+  // const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const { data: session } = useSession();
   const adminName = session?.user?.name || "Admin";
 
-  useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const authorCount = await axios.get("/api/authorCount");
-        const customerCount = await axios.get("/api/customerCount");
-        if (authorCount.data.success) setAuthorCount(authorCount.data.authorCount);
-        if (customerCount.data.success) setCustomerCount(customerCount.data.customerCount);
-      } catch (error) {
-        console.error("Error fetching counts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCounts();
-  }, []);
+  // useEffect(() => {
+  //   const fetchCounts = async () => {
+  //     try {
+  //       const authorCount = await axios.get("/api/authorCount");
+  //       const customerCount = await axios.get("/api/customerCount");
+  //       if (authorCount.data.success) setAuthorCount(authorCount.data.authorCount);
+  //       if (customerCount.data.success) setCustomerCount(customerCount.data.customerCount);
+  //     } catch (error) {
+  //       console.error("Error fetching counts:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchCounts();
+  // }, []);
 
   if (loading) {
     return (
@@ -62,7 +68,7 @@ function AdminDashboard() {
         >
           <FaUser className="text-2xl mb-2" />
           <h2 className="font-semibold mb-1">Authors</h2>
-          <p className="text-3xl font-bold">{totalAuthor ?? 0}</p>
+          <p className="text-3xl font-bold">{authorCount ?? 0}</p>
           <p className="mt-1 text-sm text-gray-400">View all authors</p>
         </motion.div>
 
@@ -74,7 +80,7 @@ function AdminDashboard() {
         >
           <FaUsers className="text-2xl mb-2" />
           <h2 className="font-semibold mb-1">Customers</h2>
-          <p className="text-3xl font-bold">{totalCustomer ?? 0}</p>
+          <p className="text-3xl font-bold">{customerCount ?? 0}</p>
           <p className="mt-1 text-sm text-gray-400">View all customers</p>
         </motion.div>
 
@@ -86,7 +92,6 @@ function AdminDashboard() {
         >
           <FaBook className="text-2xl mb-2" />
           <h2 className="font-semibold mb-1">Book Inventory</h2>
-          <p className="text-3xl font-bold">0</p> {/* Placeholder */}
           <p className="mt-1 text-sm text-gray-400">View all books</p>
         </motion.div>
 
