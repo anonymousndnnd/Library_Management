@@ -4,7 +4,7 @@ const prisma=new PrismaClient();
 
 
 import React from 'react'
-import { authOptions } from "../auth/[...nextauth]/option";
+import { authOptions } from "../../auth/[...nextauth]/option";
 
 export async function POST(request:Request){
   try {

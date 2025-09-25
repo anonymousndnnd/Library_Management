@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import Link from "next/link"
-import { useState,useEffect } from "react"
+import { useState,useEffect, useRef } from "react"
 
 import {
   Select,
@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
+import { motion } from "framer-motion";
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
@@ -26,7 +26,7 @@ import { signUpSchema } from "@/schemas/signUpSchema";
 
 export default function SignUpPage() {
   const [isSubmitting,setIsSubmitting]=useState(false);
-  // Ye Custom Debouncer hook use kar rahe hai backend pe jo hai username pre exist karta hai ki nhi check karne ke liye 
+  const modalRef = useRef<HTMLDivElement>(null); 
   const router=useRouter();
 
   //zod implementation
@@ -37,7 +37,9 @@ export default function SignUpPage() {
       email:'',
       password:'',
       role: "CUSTOMER",
-    }
+    },
+    mode: "onChange",     
+    reValidateMode: "onChange"
   })
 
   
@@ -56,15 +58,32 @@ export default function SignUpPage() {
     }
   }
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      router.back(); // go to previous page
+    }
+  }
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-800">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50" onClick={handleOverlayClick}>
+      <motion.div
+        ref={modalRef}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-md p-10 space-y-8 bg-white/90 dark:bg-gray-900/90 rounded-2xl shadow-2xl backdrop-blur-lg border border-white/20 dark:border-gray-700/40"
+      >
+        {/* Header */}
         <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
+          <h1 className="text-4xl font-extrabold lg:text-5xl mb-2 text-blue-600 dark:text-blue-400">
             Join True Feedback
           </h1>
-          <p className="mb-4">Sign up to start your anonymous adventure</p>
+          <p className="text-gray-600 dark:text-gray-300">
+            Sign up to start your anonymous adventure
+          </p>
         </div>
+
+        {/* Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
@@ -141,6 +160,8 @@ export default function SignUpPage() {
             </Button> 
           </form>
         </Form>
+
+        {/* Footer */}
         <div className="text-center mt-4">
           <p>
             Already a member?{' '}
@@ -149,7 +170,7 @@ export default function SignUpPage() {
             </Link>
           </p>
         </div>
-      </div>      
+      </motion.div>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import axios from 'axios';
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
@@ -11,8 +12,8 @@ function AuthorDashboard() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await fetch('/api/authorBooks'); // 👈 your API route
-        const data = await res.json();
+        const res = await axios('/api/authorBooks'); // 👈 your API route
+        const data = await res.data;
 
         if (data.success) {
           setBooks(data.books);
@@ -33,6 +34,12 @@ function AuthorDashboard() {
     return <p>Loading books...</p>;
   }
 
+  const getStatusText = (book: any) => {
+    if (book.status === "published") return { text: "Published", color: "text-green-600" };
+    if (book.status === "rejected") return { text: "Rejected", color: "text-red-600" };
+    return { text: "Not Published", color: "text-yellow-600" }; // pending / in process
+  };
+
   return (
     <div className="p-4">
       <button
@@ -47,15 +54,20 @@ function AuthorDashboard() {
         <p>No books found. Start by creating one!</p>
       ) : (
         <ul className="space-y-2">
-          {books.map((book) => (
-            <li key={book.id} className="border p-3 rounded-md">
-              <h3 className="font-bold">{book.title}</h3>
-              <p className="text-gray-600">{book.description}</p>
-              <span className={`text-sm ${book.isPublished ? "text-green-600" : "text-red-600"}`}>
-                {book.isPublished ? "Published" : "Draft"}
-              </span>
-            </li>
-          ))}
+          {books.map((book) => {
+            const status = getStatusText(book);
+            return (
+              <li key={book.id} className="border p-3 rounded-md cursor-pointer"
+                onClick={() => router.push(`/books/${book.id}`)}
+              >
+                <h3 className="font-bold">{book.title}</h3>
+                <p className="text-gray-600">{book.description}</p>
+                <span className={`text-sm ${status.color}`}>
+                  {status.text}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

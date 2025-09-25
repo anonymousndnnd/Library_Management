@@ -20,47 +20,49 @@ enum Role {
 }
 
 model Admin {
-  id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  username  String 
-  email     String          @unique
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  username  String
+  email     String     @unique
   password  String
-  role      Role      @default(ADMIN)
-  customer Customer[]
-  author   Author[]
-  createdAt DateTime  @default(now())
+  role      Role       @default(ADMIN)
+  customer  Customer[]
+  author    Author[]
+  createdAt DateTime   @default(now())
+  books     Books[]    @relation("AdminBooks")
 }
 
 model Customer {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  username  String 
-  email     String          @unique
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String
+  email     String   @unique
   password  String
-  adminId String @db.ObjectId
-  admin   Admin  @relation(fields: [adminId], references: [id])
-  role      Role      @default(CUSTOMER)
-  createdAt DateTime  @default(now())
+  adminId   String   @db.ObjectId
+  admin     Admin    @relation(fields: [adminId], references: [id])
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
 }
 
-
-
 model Author {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  username  String 
-  email     String          @unique
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String
+  email     String   @unique
   password  String
-  role      Role      @default(AUTHOR)
-  adminId String  @db.ObjectId
-  admin   Admin   @relation(fields: [adminId], references: [id])
-  createdAt DateTime  @default(now())
-  books Books[]
+  role      Role     @default(AUTHOR)
+  adminId   String   @db.ObjectId
+  admin     Admin    @relation(fields: [adminId], references: [id])
+  createdAt DateTime @default(now())
+  books     Books[]
 }
 
 model Books {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  title  String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
   description String
-  isPublished Boolean @default(false)
-  authorId String  @db.ObjectId
-  author   Author   @relation(fields: [authorId], references: [id])
-  createdAt DateTime  @default(now())
+  isPublished Boolean  @default(false)
+  authorId    String   @db.ObjectId
+  author      Author   @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  adminId     String?  @db.ObjectId //optional admin Id as when we send publish request to the admin then only the admin id is assigned to the books
+  admin       Admin?   @relation("AdminBooks", fields: [adminId], references: [id])
+  status      String?
 }
