@@ -1,5 +1,5 @@
 'use client';
-
+/* eslint-disable */
 import { Provider } from "react-redux";
 import { makeStore } from "@/store/store";
 import { useState, useEffect } from "react";

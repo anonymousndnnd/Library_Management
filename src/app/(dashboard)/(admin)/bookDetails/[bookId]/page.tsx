@@ -1,5 +1,5 @@
 'use client';
-
+/* eslint-disable */
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';

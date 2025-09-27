@@ -12,9 +12,9 @@ export async function POST(request:NextRequest) {
     //   return Response.json({ success: false, message: "Invalid role" }, { status: 400 })
     // }
     
-    let existingAdmin=await prisma.admin.findUnique({where:{email}});
-    let existingCustomer=await prisma.customer.findUnique({where:{email}});
-    let existingAuthor=await prisma.author.findUnique({where:{email}});
+    const existingAdmin=await prisma.admin.findUnique({where:{email}});
+    const existingCustomer=await prisma.customer.findUnique({where:{email}});
+    const existingAuthor=await prisma.author.findUnique({where:{email}});
 
     if(existingAdmin || existingCustomer || existingAuthor){
       console.log("User already exists")
