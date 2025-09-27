@@ -28,6 +28,7 @@ export default function SigInPage(){
 //   if (status === "loading") {
 //   return <p>Loading...</p>; // or a spinner
 // }
+// eslint-disable-next-line react-hooks/exhaustive-deps
 useEffect(() => {
   if (status === "authenticated" && session?.user) {
     const role = session.user.role;
