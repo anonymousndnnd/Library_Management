@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
-
 
 interface Book {
   id: string;
@@ -17,31 +16,21 @@ interface Book {
 }
 
 function BookInventory() {
-  const books = useSelector((state: RootState) => state.admin.books); // get books from adminSlice
+  const books = useSelector((state: RootState) => state.admin.books); 
   const loading = useSelector((state: RootState) => state.admin.loading);
   const [search, setSearch] = useState('');
-  const router=useRouter();
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   const fetchBooks = async () => {
-  //     try {
-  //       const res = await axios.get('/api/bookInventory');
-  //       if (res.data.success) {
-  //         setBooks(res.data.books);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching books:', error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+  const filteredBooks = useMemo(() => 
+    books.filter(book => book.title.toLowerCase().includes(search.toLowerCase()))
+  , [books, search]);
 
-  //   fetchBooks();
-  // }, []);
-
-  const filteredBooks = books.filter(book =>
-    book.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleSelect = (bookId: string) => {
+    router.replace(`/bookDetails/${bookId}`);
+    setSearch('');           // clear input
+    setShowSuggestions(false); // hide suggestions
+  };
 
   if (loading) {
     return (
@@ -54,18 +43,37 @@ function BookInventory() {
   return (
     <div className="min-h-screen p-8 bg-gray-100 dark:bg-gray-900">
       {/* Top Bar */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 relative">
+        <h2 className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4 md:mb-0">
           Total Books: {books.length}
         </h2>
 
-        <input
-          type="text"
-          placeholder="Search books..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
-        />
+        <div className="w-full md:w-1/3 relative">
+          <input
+            type="text"
+            placeholder="Search books..."
+            value={search}
+            onChange={e => {
+              setSearch(e.target.value);
+              setShowSuggestions(true);
+            }}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} // delay to allow click
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+          />
+          {showSuggestions && search && filteredBooks.length > 0 && (
+            <ul className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg mt-1 max-h-60 overflow-y-auto z-50 shadow-lg">
+              {filteredBooks.slice(0, 6).map(book => (
+                <li
+                  key={book.id}
+                  onClick={() => handleSelect(book.id)}
+                  className="px-4 py-2 cursor-pointer hover:bg-blue-500 hover:text-white dark:hover:bg-blue-600 transition"
+                >
+                  {book.title}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
 
       {/* Books Grid */}
@@ -74,8 +82,8 @@ function BookInventory() {
           <motion.div
             key={book.id}
             whileHover={{ scale: 1.05 }}
-            className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg flex flex-col justify-between transition-all"
-            onClick={()=>router.replace(`/bookDetails/${book.id}`)}
+            className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-lg flex flex-col justify-between transition-all cursor-pointer"
+            onClick={() => router.replace(`/bookDetails/${book.id}`)}
           >
             <div>
               <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-2">{book.title}</h3>

@@ -13,6 +13,12 @@ export async function POST(request:Request,{params}: { params: { bookId: string 
     if (!session) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
+    const author=await prisma.author.findUnique({
+      where:{id:session.user._id}
+    });
+    if(!author){
+      return NextResponse.json({ success: false, message: "Author is unauthorized" }, { status: 401 });
+    }
     const {bookId}=params;
     console.log("Book Id is:",bookId)
     const authorId=session?.user._id;

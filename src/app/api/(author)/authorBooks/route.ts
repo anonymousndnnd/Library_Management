@@ -24,8 +24,24 @@ export async function GET(request:Request){
       );
     }
     const books=await prisma.books.findMany({
-      where:{authorId:author.id}
-    })
+      where:{authorId:author.id},
+      include: {
+        issueRequests: {   
+        where: { issueStatus: "issued" }, // ✅ only confirmed issues
+        select: {
+          id: true,
+          customerId: true,
+        },
+        }
+    },
+    });
+    const booksWithReaders = books.map((book) => ({
+      id: book.id,
+      title: book.title,
+      description: book.description,
+      status: book.status,
+      readersCount: book.issueRequests.length, // ✅ only issued requests counted
+    }));
     console.log("books is:",books)
     return Response.json(
       { success: true, books },

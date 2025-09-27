@@ -32,14 +32,16 @@ model Admin {
 }
 
 model Customer {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  username  String
-  email     String   @unique
-  password  String
-  adminId   String   @db.ObjectId
-  admin     Admin    @relation(fields: [adminId], references: [id])
-  role      Role     @default(CUSTOMER)
-  createdAt DateTime @default(now())
+  id            String             @id @default(auto()) @map("_id") @db.ObjectId
+  username      String
+  email         String             @unique
+  password      String
+  adminId       String             @db.ObjectId
+  admin         Admin              @relation(fields: [adminId], references: [id])
+  role          Role               @default(CUSTOMER)
+  books         Books[]            @relation("CustomerBooks")
+  createdAt     DateTime           @default(now())
+  issueRequests Bookissuerequest[]
 }
 
 model Author {
@@ -51,18 +53,32 @@ model Author {
   adminId   String   @db.ObjectId
   admin     Admin    @relation(fields: [adminId], references: [id])
   createdAt DateTime @default(now())
-  books     Books[]
+  books     Books[]  @relation("AuthorBooks")
 }
 
 model Books {
+  id            String             @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String
+  isPublished   Boolean            @default(false)
+  authorId      String             @db.ObjectId
+  author        Author             @relation("AuthorBooks", fields: [authorId], references: [id])
+  createdAt     DateTime           @default(now())
+  adminId       String?            @db.ObjectId
+  admin         Admin?             @relation("AdminBooks", fields: [adminId], references: [id])
+  status        String?
+  issueRequests Bookissuerequest[]
+  isIsuued      Boolean            @default(false)
+  customerId    String?            @db.ObjectId
+  customer      Customer?          @relation("CustomerBooks", fields: [customerId], references: [id])
+}
+
+model Bookissuerequest {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  isPublished Boolean  @default(false)
-  authorId    String   @db.ObjectId
-  author      Author   @relation(fields: [authorId], references: [id])
+  book        Books    @relation(fields: [bookId], references: [id])
+  bookId      String   @db.ObjectId
+  customer    Customer @relation(fields: [customerId], references: [id])
+  customerId  String   @db.ObjectId
+  issueStatus String   @default("pending")
   createdAt   DateTime @default(now())
-  adminId     String?  @db.ObjectId //optional admin Id as when we send publish request to the admin then only the admin id is assigned to the books
-  admin       Admin?   @relation("AdminBooks", fields: [adminId], references: [id])
-  status      String?
 }

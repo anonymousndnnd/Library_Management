@@ -1,13 +1,13 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/option";
-import { NextResponse } from "next/server";
+import { authOptions } from "@/app/api/auth/[...nextauth]/option";
 import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 
 const prisma=new PrismaClient();
 
 export async function GET(request:Request){
   try {
-    const session=await getServerSession(authOptions);
+    const session=await getServerSession(authOptions);   
     if (!session) {
       return NextResponse.json({ success: false, message: "Session Expired" }, { status: 401 });
     }
@@ -18,18 +18,22 @@ export async function GET(request:Request){
     if(session.user._id!==admin.id){
       return NextResponse.json({ success: false, message: "Duplicate admin" }, { status: 401 });
     }
-
-    const books=await prisma.books.findMany({
-      where:{adminId:admin.id,isPublished:true},
+    const issuedBooks=await prisma.bookissuerequest.findMany({
+      where:{issueStatus:"issued"},
       include: {
-        author: { select: { username: true } },
-      },
+        customer: { select: { username: true, email: true } },
+        book: {
+          select: {
+            title: true,
+            createdAt: true,
+            author: { select: { username: true } },
+          },
+        },
+      }, 
     })
-    console.log("Book data is:",books);
-    return NextResponse.json({ success: true, books });
+    return NextResponse.json({ success: true, issuedBooks }, { status: 200 });
   } catch (error) {
-      console.error(error);
-      return NextResponse.json(
+      return Response.json(
         { success: false, message: "Internal Server Error" },
         { status: 500 }
       );
