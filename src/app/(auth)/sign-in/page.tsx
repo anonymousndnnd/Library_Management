@@ -144,6 +144,7 @@ useEffect(() => {
 
         {/* Google Sign In */}
         <Button
+        disabled
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
           variant="outline"
           className="w-full flex items-center justify-center gap-2 py-3 text-lg border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 rounded-lg"
