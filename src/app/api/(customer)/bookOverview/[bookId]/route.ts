@@ -2,11 +2,11 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/option";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const prisma=new PrismaClient();
 
-export async function GET(request:Request,{ params }: { params: { bookId: string }}){
+export async function GET(request:NextRequest,{ params }: { params: { bookId: string }}){
   try {
     console.log("error Apart")
     const session=await getServerSession(authOptions)
@@ -42,7 +42,7 @@ export async function GET(request:Request,{ params }: { params: { bookId: string
     });
     return NextResponse.json({ success: true, book , request: requestRecord}, { status: 200 });
   } catch (error) {
-      return Response.json(
+      return NextResponse.json(
         { success: false, message: "Internal Server Error" },
         { status: 500 }
       );

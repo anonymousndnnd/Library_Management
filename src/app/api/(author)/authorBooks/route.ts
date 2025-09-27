@@ -1,10 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/option";
+import { NextRequest, NextResponse } from "next/server";
 const prisma=new PrismaClient();
 
 
-export async function GET(request:Request){
+export async function GET(request:NextRequest){
   try {
     const session = await getServerSession(authOptions);
     console.log("session:",session);
@@ -40,16 +41,16 @@ export async function GET(request:Request){
       title: book.title,
       description: book.description,
       status: book.status,
-      readersCount: book.issueRequests.length, // ✅ only issued requests counted
+      readersCount: book.issueRequests.length, 
     }));
     console.log("books is:",books)
-    return Response.json(
+    return NextResponse.json(
       { success: true, books },
       { status: 200 }
     );
   } catch (error) {
       console.error(error);
-      return Response.json(
+      return NextResponse.json(
         { success: false, message: "Internal Server Error" },
         { status: 500 }
       );

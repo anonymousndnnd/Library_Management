@@ -5,8 +5,9 @@ const prisma=new PrismaClient();
 
 import React from 'react'
 import { authOptions } from "../../auth/[...nextauth]/option";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request:Request){
+export async function POST(request:NextRequest){
   try {
     const session = await getServerSession(authOptions)
     console.log("session:",session);
@@ -35,13 +36,13 @@ export async function POST(request:Request){
         authorId: author.id
       },
     });
-    return Response.json(
+    return NextResponse.json(
       { success: true, book },
       { status: 201 }
     );
   } catch (error) {
       console.error(error);
-    return Response.json(
+    return NextResponse.json(
       { success: false, message: "Internal Server Error" },
       { status: 500 }
     );

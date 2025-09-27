@@ -49,10 +49,15 @@ export default function SignUpPage() {
       const response=await axios.post('/api/sign-up',data);
       toast("Signed-up successfully")
       router.replace(`/sign-in`)
-    } catch (error) {
-      console.error("Error in signup of user",error)
-      //scope of error during debugging 
-      toast("SignUp Failed")
+    } catch (error:any) {
+      console.error("Error in signup", error);
+
+    // Show specific backend message
+    if (error.response?.data?.message) {
+      toast.error(error.response.data.message); // e.g. "You are not an admin"
+    } else {
+      toast.error("Sign-up failed. Try again.");
+    }
     } finally{
       setIsSubmitting(false);
     }

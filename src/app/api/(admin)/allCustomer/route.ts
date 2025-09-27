@@ -1,11 +1,11 @@
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { authOptions } from "../../auth/[...nextauth]/option";
 
 const prisma=new PrismaClient();
 
-export async function GET(request:Request){
+export async function GET(request:NextRequest){
   try {
     const session=await getServerSession(authOptions);
     if (!session) {
@@ -68,7 +68,7 @@ export async function GET(request:Request){
     return NextResponse.json({ success: true, customerData }, { status: 200 });
   } catch (error) {
       console.error("error is",error)
-      return Response.json(
+      return NextResponse.json(
         { success: false, message: "Internal Server Error" },
         { status: 500 }
       );

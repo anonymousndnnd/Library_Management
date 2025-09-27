@@ -59,7 +59,6 @@ export const authOptions:NextAuthOptions={
           if(!user){
             throw new Error("No user found with this identifier");
           }
-
           const isPasswordCorrect=await bcrypt.compare(credentials.password,user.password);
           if(isPasswordCorrect){
             console.log("✅ [DEBUG] Login successful for user:", user.email);

@@ -1,9 +1,10 @@
 import bcrypt from "bcryptjs"
 import { PrismaClient, Role } from "@prisma/client";
+import { NextRequest, NextResponse } from "next/server";
 
 const prisma=new PrismaClient()
 
-export async function POST(request:Request) {
+export async function POST(request:NextRequest) {
   try {
     const {username,email, password,role} = await request.json();
 
@@ -85,18 +86,18 @@ export async function POST(request:Request) {
         },
       });
 
-      return Response.json(
+      return NextResponse.json(
         { success: true, message: "Customer created successfully", data: newCustomer },
         { status: 201 }
       );
     }
-    return Response.json({
+    return NextResponse.json({
         success:true,
         message:"User Registered Successfully ."
       },{status:201})
   } catch (error) {
       console.error("Error registering user",error)
-      return Response.json({
+      return NextResponse.json({
         success:false,
         message:"Error registering user"
       },{

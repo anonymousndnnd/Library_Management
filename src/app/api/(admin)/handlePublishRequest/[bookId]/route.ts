@@ -1,11 +1,13 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/option";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+
+//this route basically handles accepting publish request sent by the author
 
 const prisma=new PrismaClient();
 
-export async function PATCH(request:Request,{ params }: { params: { bookId: string }}){
+export async function PATCH(request:NextRequest,{ params }: { params: { bookId: string }}){
   try {
     const session=await getServerSession(authOptions);   
     if (!session) {
@@ -33,7 +35,7 @@ export async function PATCH(request:Request,{ params }: { params: { bookId: stri
       book: updatedBook,
     });
   } catch (error) {
-    return Response.json(
+    return NextResponse.json(
         { success: false, message: "Internal Server Error" },
         { status: 500 }
       );
