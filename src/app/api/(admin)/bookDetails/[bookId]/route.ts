@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma=new PrismaClient();
 
-export async function GET(request:NextRequest,{ params }: { params: { bookId: string }}){
+export async function GET(request:NextRequest,context: { params: { bookId: string } }){
   try {
     const session=await getServerSession(authOptions);   
     if (!session) {
@@ -19,7 +19,7 @@ export async function GET(request:NextRequest,{ params }: { params: { bookId: st
     if(session.user._id!==admin.id){
       return NextResponse.json({ success: false, message: "Duplicate admin" }, { status: 401 });
     }
-    const {bookId}=params;
+   const { bookId } = context.params as { bookId: string };
     const book=await prisma.books.findUnique({
       where:{id:bookId},
       include:{
