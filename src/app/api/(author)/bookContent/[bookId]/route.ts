@@ -5,13 +5,13 @@ import { NextRequest, NextResponse } from "next/server";
 
 
 const prisma=new PrismaClient();
-export async function GET(request:NextRequest,{ params }: { params: { bookId: string }}){
+export async function GET(request:NextRequest,context:any){
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
-    const {bookId}=params;
+    const { bookId } = context.params as { bookId: string };
     console.log("Id is:",bookId)
 
     const book=await prisma.books.findUnique({where:{id:bookId}});

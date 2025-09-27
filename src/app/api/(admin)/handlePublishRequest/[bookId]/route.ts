@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma=new PrismaClient();
 
-export async function PATCH(request:NextRequest,{ params }: { params: { bookId: string }}){
+export async function PATCH(request:NextRequest,context: any){
   try {
     const session=await getServerSession(authOptions);   
     if (!session) {
@@ -20,7 +20,7 @@ export async function PATCH(request:NextRequest,{ params }: { params: { bookId: 
     if(session.user._id!==admin.id){
       return NextResponse.json({ success: false, message: "Duplicate admin" }, { status: 401 });
     }
-    const {bookId}=params;
+    const { bookId } = context.params as { bookId: string };
 
     const updatedBook = await prisma.books.update({
       where: { id: bookId },

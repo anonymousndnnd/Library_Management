@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma=new PrismaClient();
 
-export async function POST(request:NextRequest,{params}: { params: { bookId: string }}){
+export async function POST(request:NextRequest,context:any){
   try {
     const session = await getServerSession(authOptions);
     console.log("session is in request:",session)
@@ -20,7 +20,7 @@ export async function POST(request:NextRequest,{params}: { params: { bookId: str
     if(!customer){
       return NextResponse.json({ success: false, message: "Customer is unauthorized" }, { status: 401 });
     }
-    const {bookId}=params;
+    const { bookId } = context.params as { bookId: string };
     // const customerId=session?.user._id;
     const book = await prisma.books.findUnique({ where: { id: bookId } });
     const newRequest = await prisma.bookissuerequest.create({

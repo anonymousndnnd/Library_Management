@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 const prisma=new PrismaClient();
 
 //this route return the list of all datas associated with single author
-export async function GET(request:NextRequest,{ params }: { params: { authorId: string }}){
+export async function GET(request:NextRequest,context:any){
   try {
     const session=await getServerSession(authOptions);
     
@@ -20,7 +20,7 @@ export async function GET(request:NextRequest,{ params }: { params: { authorId: 
     if(session.user._id!==admin.id){
       return NextResponse.json({ success: false, message: "Duplicate admin" }, { status: 401 });
     }
-    const {authorId}=params;
+    const { authorId } = context.params as { authorId: string };
     console.log("Id is:",authorId)
     const author=await prisma.author.findUnique({
       where:{id:authorId},

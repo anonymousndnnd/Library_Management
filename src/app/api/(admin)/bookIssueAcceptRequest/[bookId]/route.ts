@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma=new PrismaClient();
 
-export async function POST(request:NextRequest , { params }: { params: { bookId: string }}){
+export async function POST(request:NextRequest , context: any){
   try {
     const session=await getServerSession(authOptions);
     if(!session){
@@ -19,7 +19,7 @@ export async function POST(request:NextRequest , { params }: { params: { bookId:
     if(!admin){
       return NextResponse.json({ success: false, message: "Admin Not Found" }, { status: 401 });
     }
-    const {bookId}=params;
+    const { bookId } = context.params as { bookId: string };
     const bookRequest = await prisma.bookissuerequest.findUnique({
       where: { id: bookId },
       include: { book: true, customer: true },

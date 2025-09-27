@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma=new PrismaClient();
 
-export async function GET(request:NextRequest,{ params }: { params: { bookId: string }}){
+export async function GET(request:NextRequest,context:any){
   try {
     console.log("error Apart")
     const session=await getServerSession(authOptions)
@@ -20,7 +20,7 @@ export async function GET(request:NextRequest,{ params }: { params: { bookId: st
     if(!customer){
       return NextResponse.json({ success: false, message: "Customer is unauthorized" }, { status: 401 });
     }
-    const {bookId}=params;
+    const { bookId } = context.params as { bookId: string };
     const book=await prisma.books.findUnique({
       where:{id:bookId},
       include:{

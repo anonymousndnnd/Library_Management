@@ -7,7 +7,7 @@ const prisma=new PrismaClient();
 //this route basically handles rejecting publish request sent by the author
 
 
-export async function PATCH(request:NextRequest,{ params }: { params: { bookId: string }}){
+export async function PATCH(request:NextRequest,context:any){
   try {
     const session=await getServerSession(authOptions);
         
@@ -22,7 +22,7 @@ export async function PATCH(request:NextRequest,{ params }: { params: { bookId: 
       return NextResponse.json({ success: false, message: "Duplicate admin" }, { status: 401 });
     }
 
-    const { bookId } = params;
+    const { bookId } = context.params as { bookId: string };
 
     const rejectedBook = await prisma.books.update({
       where: { id: bookId },
